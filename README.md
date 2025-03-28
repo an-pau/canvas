@@ -6,6 +6,13 @@ A drawing tool 🖋️
 
 TBA
 
+## todo
+
+- [] Time limit clicking off canvas
+- [] Undo
+- [] Redo
+- [] Change brush color
+
 ## developing
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
