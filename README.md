@@ -8,10 +8,9 @@ TBA
 
 ## todo
 
-- [] Time limit clicking off canvas
-- [] Undo
-- [] Redo
-- [] Change brush color
+- Time limit clicking off canvas
+- Fix redo bug
+- Change brush color
 
 ## developing
 
