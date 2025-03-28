@@ -12,5 +12,8 @@
     "prettier": "^3.5.3",
     "typescript": "~5.7.2",
     "vite": "^6.2.2"
+  },
+  "dependencies": {
+    "uuid": "^11.1.0"
   }
 }

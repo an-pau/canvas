@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid'
 import "./style.css";
 
 class DrawingCanvas {
@@ -15,11 +16,21 @@ class DrawingCanvas {
   brushWidth: number;
   selectedColor: string;
 
-  past: Array<ImageData>;
-  current: Array<ImageData>;
-  future: Array<ImageData>;
+  past: Array<{
+    id: string,
+    data: ImageData,
+  }>;
+  current: Array<{
+    id: string,
+    data: ImageData,
+  }>;
+  future: Array<{
+    id: string,
+    data: ImageData,
+  }>;
 
   /** @note @todo Undo/Redo actions using stack DS with push/pop method */
+  /** Set limit for how many actions/images are saved */
   constructor() {
     const canvas = document.getElementById("canvas") as HTMLCanvasElement;
     this.sizeSlider = document.getElementById(
@@ -30,7 +41,7 @@ class DrawingCanvas {
     this.redoBtn = document.getElementById("redo") as HTMLButtonElement;
 
     this.canvas = canvas;
-    this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    this.ctx = canvas.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
 
     this.isDrawing = false;
     this.lastSavedX = 0;
@@ -81,11 +92,15 @@ class DrawingCanvas {
     });
 
     this.undoBtn.addEventListener("click", () => {
-      this.undo();
+      if (this.past.length > 0) {
+        this.undo();
+      }
     });
 
     this.redoBtn.addEventListener("click", () => {
-      this.redo();
+      if (this.future.length > 0) {
+        this.redo();
+      }
     });
   }
 
@@ -96,7 +111,11 @@ class DrawingCanvas {
       this.canvas.width,
       this.canvas.height,
     );
-    this.current.push(currentImageData);
+    const uniqueId = uuidv4();
+    this.current.push({
+      id: uniqueId,
+      data: currentImageData,
+    });
 
     this.ctx.lineTo(e.offsetX, e.offsetY);
     this.ctx.stroke();
@@ -110,37 +129,31 @@ class DrawingCanvas {
     this.ctx.beginPath();
   }
 
-  redraw(action: "undo" | "redo") {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    switch (action) {
-      case "undo":
-        const lastAddedImageData = this.past.pop();
-        if (lastAddedImageData) {
-          this.future.unshift(lastAddedImageData);
-          this.ctx.putImageData(lastAddedImageData, 0, 0);
-        }
-        break;
-      case "redo":
-        const lastRemovedImageData = this.future.shift();
-        if (lastRemovedImageData) {
-          this.ctx.putImageData(lastRemovedImageData, 0, 0);
-          this.past.push(lastRemovedImageData);
-        }
-        break;
-      default:
-    }
-  }
-
   undo() {
-    if (this.past.length > 0) {
-      this.redraw("undo");
+    const past = [...this.past];
+    const future = [...this.future];
+
+    const lastAddedImage = past.pop();
+    this.past = [...past];
+
+    if (lastAddedImage) {
+      future.push(lastAddedImage);
+      this.future = [...future];
+      this.ctx.putImageData(lastAddedImage.data, 0, 0);
     }
   }
 
   redo() {
-    if (this.future.length > 0) {
-      this.redraw("redo");
+    const past = [...this.past];
+    const future = [...this.future];
+
+    const lastRemovedImage = future.pop();
+    this.future = [...future];
+
+    if (lastRemovedImage) {
+      past.push(lastRemovedImage);
+      this.past = [...past];
+      this.ctx.putImageData(lastRemovedImage.data, 0, 0);
     }
   }
 
