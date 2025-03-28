@@ -39,12 +39,12 @@ class DrawingCanvas {
     this.ctx.lineJoin = "round";
 
     this.canvas.addEventListener("mousedown", (e) => {
-      this.startDrawing(e);
+      this.start(e);
     });
 
     this.canvas.addEventListener("mousemove", (e) => {
       if (!this.isDrawing) return;
-      this.drawPencil(e);
+      this.draw(e);
     });
 
     this.canvas.addEventListener("mouseup", () => {
@@ -64,12 +64,12 @@ class DrawingCanvas {
     });
   }
 
-  drawPencil(e: MouseEvent) {
+  draw(e: MouseEvent) {
     this.ctx.lineTo(e.offsetX, e.offsetY);
     this.ctx.stroke();
   }
 
-  startDrawing(e: MouseEvent) {
+  start(e: MouseEvent) {
     this.isDrawing = true;
     this.lastSavedX = e.offsetX;
     this.lastSavedY = e.offsetY;
