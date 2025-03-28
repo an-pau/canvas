@@ -13,7 +13,6 @@ class DrawingCanvas {
   isDrawing: boolean;
   lastSavedX: number;
   lastSavedY: number;
-  brushWidth: number;
   selectedColor: string;
 
   past: Array<{
@@ -46,7 +45,6 @@ class DrawingCanvas {
     this.isDrawing = false;
     this.lastSavedX = 0;
     this.lastSavedY = 0;
-    this.brushWidth = 4;
     this.selectedColor = "black";
 
     this.past = [];
@@ -60,7 +58,7 @@ class DrawingCanvas {
     this.canvas.width = this.canvas.offsetWidth;
     this.canvas.height = this.canvas.offsetHeight;
 
-    this.ctx.lineWidth = this.brushWidth;
+    this.ctx.lineWidth = 4;
     this.ctx.strokeStyle = this.selectedColor;
     this.ctx.fillStyle = this.selectedColor;
     this.ctx.lineCap = "round";
@@ -84,7 +82,7 @@ class DrawingCanvas {
     });
 
     this.sizeSlider.addEventListener("change", () => {
-      this.brushWidth = Number(this.sizeSlider.value);
+      this.ctx.lineWidth = Number(this.sizeSlider.value);
     });
 
     this.clearBtn.addEventListener("click", () => {
