@@ -1,90 +1,90 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  font-size: 12px;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    font-size: 12px;
 
-  color: #213547;
-  background-color: white;
+    color: #213547;
+    background-color: white;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  background-color: lavender;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: lavender;
 }
 
 button {
-  cursor: pointer;
-  border-radius: 10px;
-  border: transparent;
-  background-color: lightpink;
-  padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: transparent;
+    background-color: lightpink;
+    padding: 5px 10px;
 }
 
 button:hover:enabled {
-  background-color: pink;
-  transition: 0.2s;
+    background-color: pink;
+    transition: 0.2s;
 }
 
 hr {
-  background-color: lavender;
-  height: 1px;
-  border: 0;
-  width: 100%;
+    background-color: lavender;
+    height: 1px;
+    border: 0;
+    width: 100%;
 }
 
 #app {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  border-radius: 20px;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
 }
 
 #menu-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  height: fit-content;
-  background-color: white;
-  margin: 40px 40px 0 40px;
-  padding: 30px 20px;
-  border-radius: 10px;
-  gap: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    height: fit-content;
+    background-color: white;
+    margin: 40px 40px 0 40px;
+    padding: 30px 20px;
+    border-radius: 10px;
+    gap: 2rem;
 }
 
 .header {
-  font-size: 22px;
-  font-weight: bold;
+    font-size: 22px;
+    font-weight: bold;
 }
 
 #canvas-container {
-  width: 100%;
-  padding: 40px 40px 40px 0;
+    width: 100%;
+    padding: 40px 40px 40px 0;
 }
 
 #canvas-container canvas {
-  width: 1000px;
-  height: 900px;
-  border-radius: 10px;
-  background-color: white;
+    width: 1000px;
+    height: 900px;
+    border-radius: 10px;
+    background-color: white;
 }
 
 #size-slider {
-  accent-color: lightpink;
+    accent-color: lightpink;
 }
 
 #clear {
-  font-size: 16px;
+    font-size: 16px;
 }
