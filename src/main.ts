@@ -143,8 +143,9 @@ class DrawingCanvas {
         });
     }
 
-    /** @todo Limit how long a user can click off canvas */
     initDrawingEvents() {
+        let timeoutID: number | null = null;
+
         this.canvas.addEventListener("mousedown", () => {
             this.start();
         });
@@ -156,14 +157,29 @@ class DrawingCanvas {
         });
 
         this.canvas.addEventListener("mouseup", () => {
-            this.isDrawing = false;
-
-            // Once mouse up, current image can be stored away
-            this.past.push(this.current[0]);
-            this.undoBtn.disabled = false;
-            // Reset current for next stroke
-            this.current = [];
+            this.finish();
         });
+
+        this.canvas.addEventListener("mouseout", () => {
+            // Set a timeout to finish drawing after 2 seconds of inactivity
+            timeoutID = setTimeout(() => {
+                this.finish();
+                timeoutID = null; // Reset timeoutID after execution
+            }, 2000);
+        });
+
+        this.canvas.addEventListener("mouseover", () => {
+            // Clear the timeout if the mouse re-enters the canvas
+            if (timeoutID) {
+                clearTimeout(timeoutID);
+                timeoutID = null; // Reset timeoutID after clearing
+            }
+        });
+    }
+
+    start() {
+        this.isDrawing = true;
+        this.ctx.beginPath();
     }
 
     draw(e: MouseEvent) {
@@ -184,9 +200,14 @@ class DrawingCanvas {
         this.ctx.stroke();
     }
 
-    start() {
-        this.isDrawing = true;
-        this.ctx.beginPath();
+    finish() {
+        this.isDrawing = false;
+
+        // Once mouse up, current image can be stored away
+        this.past.push(this.current[0]);
+        this.undoBtn.disabled = false;
+        // Reset current for next stroke
+        this.current = [];
     }
 
     undo() {

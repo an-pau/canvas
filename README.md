@@ -10,12 +10,8 @@ TBA
 
 ## todo
 
-- Time limit clicking off canvas
 - Fix redo bug
-
-## considerations
-
-- What is the maximum size of past/future data storage this can handle?
+- Set size limit for undo/redo data storage
 
 ## developing
 
