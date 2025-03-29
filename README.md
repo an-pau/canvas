@@ -2,6 +2,8 @@
 
 A drawing tool 🖋️
 
+![canvas-screenshot1](./assets/canvas_screenshot1.png)
+
 ## changelog
 
 TBA
@@ -11,6 +13,7 @@ TBA
 - Time limit clicking off canvas
 - Fix redo bug
 - Save functionality
+- Use Sass
 
 ## developing
 
