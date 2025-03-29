@@ -20,10 +20,6 @@ class DrawingCanvas {
         id: string;
         data: ImageData;
     }>;
-    current: Array<{
-        id: string;
-        data: ImageData;
-    }>;
     future: Array<{
         id: string;
         data: ImageData;
@@ -52,7 +48,6 @@ class DrawingCanvas {
 
         /** @todo Set limit for how many actions/images are saved */
         this.past = [];
-        this.current = [];
         this.future = [];
 
         this.initCanvas();
@@ -144,35 +139,21 @@ class DrawingCanvas {
     }
 
     initDrawingEvents() {
-        let timeoutID: number | null = null;
-
-        this.canvas.addEventListener("mousedown", () => {
-            this.start();
+        this.canvas.addEventListener("mousedown", (e) => {
+            if (this.isEventInsideCanvas(e)) {
+                this.start();
+            }
         });
 
         this.canvas.addEventListener("mousemove", (e) => {
             // On mouse move, this.draw is only called when drawing (mouse down)
-            if (!this.isDrawing) return;
+            if (!this.isDrawing || !this.isEventInsideCanvas(e)) return;
             this.draw(e);
         });
 
-        this.canvas.addEventListener("mouseup", () => {
-            this.finish();
-        });
-
-        this.canvas.addEventListener("mouseout", () => {
-            // Set a timeout to finish drawing after 2 seconds of inactivity
-            timeoutID = setTimeout(() => {
+        this.canvas.addEventListener("mouseup", (e) => {
+            if (this.isEventInsideCanvas(e)) {
                 this.finish();
-                timeoutID = null; // Reset timeoutID after execution
-            }, 2000);
-        });
-
-        this.canvas.addEventListener("mouseover", () => {
-            // Clear the timeout if the mouse re-enters the canvas
-            if (timeoutID) {
-                clearTimeout(timeoutID);
-                timeoutID = null; // Reset timeoutID after clearing
             }
         });
     }
@@ -183,19 +164,6 @@ class DrawingCanvas {
     }
 
     draw(e: MouseEvent) {
-        const currentImageData = this.ctx.getImageData(
-            0,
-            0,
-            this.canvas.width,
-            this.canvas.height
-        );
-        // Unique ID helps us quickly distinguish stored image data
-        const uniqueId = uuidv4();
-        this.current.push({
-            id: uniqueId,
-            data: currentImageData,
-        });
-
         this.ctx.lineTo(e.offsetX, e.offsetY);
         this.ctx.stroke();
     }
@@ -204,64 +172,70 @@ class DrawingCanvas {
         this.isDrawing = false;
 
         // Once mouse up, current image can be stored away
-        this.past.push(this.current[0]);
+        const currentImageData = this.ctx.getImageData(
+            0,
+            0,
+            this.canvas.width,
+            this.canvas.height
+        );
+        // Unique ID helps us quickly distinguish stored image data
+        const uniqueId = uuidv4();
+        this.past.push({
+            id: uniqueId,
+            data: currentImageData,
+        });
         this.undoBtn.disabled = false;
-        // Reset current for next stroke
-        this.current = [];
+
+        this.future = [];
+        this.redoBtn.disabled = true;
     }
 
     undo() {
-        const past = structuredClone(this.past);
-        const future = structuredClone(this.future);
+        if (this.past.length === 0) return;
 
-        const lastAddedImage = past.pop();
-        this.past = structuredClone(past);
+        const lastAddedImage = this.past.pop();
 
         if (lastAddedImage) {
-            future.unshift(lastAddedImage);
-            this.future = structuredClone(future);
+            this.future.unshift(lastAddedImage);
             this.redoBtn.disabled = false;
 
-            this.ctx.putImageData(lastAddedImage.data, 0, 0);
+            if (this.past.length > 0) {
+                this.ctx.putImageData(
+                    this.past[this.past.length - 1].data,
+                    0,
+                    0
+                );
+            } else {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
         }
 
-        if (this.past.length < 1) {
+        if (this.past.length === 0) {
             this.undoBtn.disabled = true;
         }
-
-        /** @debug @todo Remove after fix */
-        console.log("UNDO PAST", this.past);
-        console.log("UNDO FUTURE", this.future);
     }
 
     redo() {
-        const past = structuredClone(this.past);
-        const future = structuredClone(this.future);
+        if (this.future.length === 0) return;
 
-        const lastRemovedImage = future.shift();
-        this.future = structuredClone(future);
+        const lastRemovedImage = this.future.shift();
 
         if (lastRemovedImage) {
-            past.push(lastRemovedImage);
-            this.past = structuredClone(past);
+            this.past.push(lastRemovedImage);
+            this.undoBtn.disabled = false;
 
             this.ctx.putImageData(lastRemovedImage.data, 0, 0);
         }
 
-        if (this.future.length < 1) {
+        if (this.future.length === 0) {
             this.redoBtn.disabled = true;
         }
-
-        /** @debug @todo Remove after fix */
-        console.log("REDO PAST", this.past);
-        console.log("REDO FUTURE", this.future);
     }
 
     clear() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.past = [];
-        this.current = [];
         this.undoBtn.disabled = true;
         this.redoBtn.disabled = true;
     }
@@ -272,6 +246,16 @@ class DrawingCanvas {
         link.href = dataURL;
         link.download = "my_canvas";
         link.click();
+    }
+
+    isEventInsideCanvas(e: MouseEvent) {
+        const rect = this.canvas.getBoundingClientRect();
+        return (
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom
+        );
     }
 }
 

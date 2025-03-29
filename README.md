@@ -10,7 +10,6 @@ TBA
 
 ## todo
 
-- Fix redo bug
 - Set size limit for undo/redo data storage
 
 ## developing
