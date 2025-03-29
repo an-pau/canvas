@@ -3,15 +3,15 @@ import { DEFAULT_CTX } from "./constants";
 import "./style.scss";
 
 class DrawingCanvas {
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+
+    colorSelectBtns: HTMLCollectionOf<Element>;
     sizeSlider: HTMLInputElement;
     undoBtn: HTMLButtonElement;
     redoBtn: HTMLButtonElement;
     clearBtn: HTMLButtonElement;
     saveBtn: HTMLButtonElement;
-    colorSelectBtns: HTMLCollectionOf<Element>;
-
-    canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D;
 
     isDrawing: boolean;
     keysPressed: { [key: string]: boolean };
@@ -31,7 +31,14 @@ class DrawingCanvas {
 
     constructor() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-        
+        this.canvas = canvas;
+        this.ctx = canvas.getContext("2d", {
+            willReadFrequently: true,
+        }) as CanvasRenderingContext2D;
+
+        this.colorSelectBtns = document.getElementsByClassName(
+            "brush-select"
+        ) as HTMLCollectionOf<Element>;
         this.sizeSlider = document.getElementById(
             "size-slider"
         ) as HTMLInputElement;
@@ -39,14 +46,6 @@ class DrawingCanvas {
         this.redoBtn = document.getElementById("redo") as HTMLButtonElement;
         this.clearBtn = document.getElementById("clear") as HTMLButtonElement;
         this.saveBtn = document.getElementById("save") as HTMLButtonElement;
-        this.colorSelectBtns = document.getElementsByClassName(
-            "brush-select"
-        ) as HTMLCollectionOf<Element>;
-
-        this.canvas = canvas;
-        this.ctx = canvas.getContext("2d", {
-            willReadFrequently: true,
-        }) as CanvasRenderingContext2D;
 
         this.isDrawing = false;
         this.keysPressed = {};
@@ -56,10 +55,12 @@ class DrawingCanvas {
         this.current = [];
         this.future = [];
 
-        this.initEvents();
+        this.initCanvas();
+        this.initUserEvents();
+        this.initDrawingEvents();
     }
 
-    initEvents() {
+    initCanvas() {
         this.canvas.width = this.canvas.offsetWidth;
         this.canvas.height = this.canvas.offsetHeight;
 
@@ -68,33 +69,18 @@ class DrawingCanvas {
         this.ctx.fillStyle = DEFAULT_CTX.fillStyle;
         this.ctx.lineCap = DEFAULT_CTX.lineCap;
         this.ctx.lineJoin = DEFAULT_CTX.lineJoin;
+        // Sets canvas background
         this.ctx.fillRect(
             0,
             0,
             this.canvas.offsetWidth,
             this.canvas.offsetHeight
         );
+    }
 
+    initUserEvents() {
         this.undoBtn.disabled = true;
         this.redoBtn.disabled = true;
-
-        this.canvas.addEventListener("mousedown", () => {
-            this.start();
-        });
-
-        /** @todo Limit how long a user can click off canvas */
-        this.canvas.addEventListener("mousemove", (e) => {
-            if (!this.isDrawing) return;
-            this.draw(e);
-        });
-
-        this.canvas.addEventListener("mouseup", () => {
-            this.isDrawing = false;
-
-            this.past.push(this.current[0]);
-            this.undoBtn.disabled = false;
-            this.current = [];
-        });
 
         this.sizeSlider.addEventListener("change", () => {
             this.ctx.lineWidth = Number(this.sizeSlider.value);
@@ -126,15 +112,22 @@ class DrawingCanvas {
             this.save();
         });
 
+        // Listens for undo and redo keydown events
         document.addEventListener("keydown", (event) => {
             this.keysPressed[event.key] = true;
+            console.log(this.keysPressed);
 
-            if (this.keysPressed["Control"] && this.keysPressed["z"]) {
+            const ctrlCmdPressed =
+                navigator.userAgent.indexOf("Mac") != -1
+                    ? this.keysPressed["Meta"]
+                    : this.keysPressed["Control"];
+
+            if (ctrlCmdPressed && this.keysPressed["z"]) {
                 this.undo();
             }
 
             if (
-                this.keysPressed["Control"] &&
+                ctrlCmdPressed &&
                 this.keysPressed["Shift"] &&
                 this.keysPressed["Z"]
             ) {
@@ -142,8 +135,34 @@ class DrawingCanvas {
             }
         });
 
-        document.addEventListener("keyup", (event) => {
-            delete this.keysPressed[event.key];
+        // Clear previous keys pressed
+        document.addEventListener("keyup", () => {
+            for (const prop of Object.getOwnPropertyNames(this.keysPressed)) {
+                delete this.keysPressed[prop];
+            }
+        });
+    }
+
+    /** @todo Limit how long a user can click off canvas */
+    initDrawingEvents() {
+        this.canvas.addEventListener("mousedown", () => {
+            this.start();
+        });
+
+        this.canvas.addEventListener("mousemove", (e) => {
+            // On mouse move, this.draw() is only called when drawing (mouse down)
+            if (!this.isDrawing) return;
+            this.draw(e);
+        });
+
+        this.canvas.addEventListener("mouseup", () => {
+            this.isDrawing = false;
+
+            // Once mouse up, current image can be stored away
+            this.past.push(this.current[0]);
+            this.undoBtn.disabled = false;
+            // Reset current for next stroke
+            this.current = [];
         });
     }
 
@@ -154,6 +173,7 @@ class DrawingCanvas {
             this.canvas.width,
             this.canvas.height
         );
+        // Unique ID helps us quickly distinguish stored image data
         const uniqueId = uuidv4();
         this.current.push({
             id: uniqueId,

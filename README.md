@@ -14,6 +14,7 @@ TBA
 - Fix redo bug
 
 ## considerations
+
 - What is the maximum size of past/future data storage this can handle?
 
 ## developing
