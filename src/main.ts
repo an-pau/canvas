@@ -33,6 +33,7 @@ class DrawingCanvas {
     /** Set limit for how many actions/images are saved */
     constructor() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+        
         this.sizeSlider = document.getElementById(
             "size-slider"
         ) as HTMLInputElement;
