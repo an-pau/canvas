@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { DEFAULT_CTX } from "./constants";
-import "./style.css";
+import "./style.scss";
 
 class DrawingCanvas {
     sizeSlider: HTMLInputElement;
@@ -124,7 +124,7 @@ class DrawingCanvas {
             if (
                 this.keysPressed["Control"] &&
                 this.keysPressed["Shift"] &&
-                this.keysPressed["z"]
+                this.keysPressed["Z"]
             ) {
                 this.redo();
             }
@@ -175,6 +175,9 @@ class DrawingCanvas {
         if (this.past.length < 1) {
             this.undoBtn.disabled = true;
         }
+
+        console.log("UNDO PAST", this.past);
+        console.log("UNDO FUTURE", this.future);
     }
 
     redo() {
@@ -187,7 +190,6 @@ class DrawingCanvas {
         if (lastRemovedImage) {
             past.push(lastRemovedImage);
             this.past = structuredClone(past);
-            console.log(lastRemovedImage);
 
             this.ctx.putImageData(lastRemovedImage.data, 0, 0);
         }
@@ -195,6 +197,9 @@ class DrawingCanvas {
         if (this.future.length < 1) {
             this.redoBtn.disabled = true;
         }
+
+        console.log("REDO PAST", this.past);
+        console.log("REDO FUTURE", this.future);
     }
 
     clear() {

@@ -13,7 +13,6 @@ TBA
 - Time limit clicking off canvas
 - Fix redo bug
 - Save functionality
-- Use Sass
 
 ## developing
 
