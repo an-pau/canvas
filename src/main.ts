@@ -150,7 +150,7 @@ class DrawingCanvas {
         });
 
         this.canvas.addEventListener("mousemove", (e) => {
-            // On mouse move, this.draw() is only called when drawing (mouse down)
+            // On mouse move, this.draw is only called when drawing (mouse down)
             if (!this.isDrawing) return;
             this.draw(e);
         });
