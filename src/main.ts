@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { DEFAULT_CTX } from "./constants";
 import "./style.css";
 
 class DrawingCanvas {
@@ -12,7 +13,6 @@ class DrawingCanvas {
     ctx: CanvasRenderingContext2D;
 
     isDrawing: boolean;
-    selectedColor: string;
     keysPressed: { [key: string]: boolean };
 
     past: Array<{
@@ -48,7 +48,6 @@ class DrawingCanvas {
         }) as CanvasRenderingContext2D;
 
         this.isDrawing = false;
-        this.selectedColor = "black";
         this.keysPressed = {};
 
         this.past = [];
@@ -62,11 +61,11 @@ class DrawingCanvas {
         this.canvas.width = this.canvas.offsetWidth;
         this.canvas.height = this.canvas.offsetHeight;
 
-        this.ctx.lineWidth = 4;
-        this.ctx.strokeStyle = this.selectedColor;
-        this.ctx.fillStyle = this.selectedColor;
-        this.ctx.lineCap = "round";
-        this.ctx.lineJoin = "round";
+        this.ctx.lineWidth = DEFAULT_CTX.lineWidth;
+        this.ctx.strokeStyle = DEFAULT_CTX.strokeStyle;
+        this.ctx.fillStyle = DEFAULT_CTX.fillStyle;
+        this.ctx.lineCap = DEFAULT_CTX.lineCap;
+        this.ctx.lineJoin = DEFAULT_CTX.lineJoin;
 
         this.undoBtn.disabled = true;
         this.redoBtn.disabled = true;
@@ -109,7 +108,6 @@ class DrawingCanvas {
             el.addEventListener("click", () => {
                 const brushColor = el.getAttribute("data-br-color");
                 if (brushColor) {
-                    this.selectedColor = brushColor;
                     this.ctx.strokeStyle = brushColor;
                     this.ctx.fillStyle = brushColor;
                 }
