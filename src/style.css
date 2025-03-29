@@ -36,6 +36,10 @@ button:hover:enabled {
     transition: 0.2s;
 }
 
+button:disabled {
+    cursor: auto;
+}
+
 hr {
     background-color: lavender;
     height: 1px;
@@ -59,7 +63,7 @@ hr {
     height: fit-content;
     background-color: white;
     margin: 40px 40px 0 40px;
-    padding: 30px 20px;
+    padding: 20px;
     border-radius: 10px;
     gap: 2rem;
 }
@@ -67,6 +71,65 @@ hr {
 .header {
     font-size: 22px;
     font-weight: bold;
+}
+
+#brush-colors {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-gap: 1rem;
+}
+
+.brush-select {
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+.brush-select.black {
+    background-color: #101010;
+}
+
+.brush-select.black:hover {
+    background-color: #4d4d4d;
+}
+
+.brush-select.blue {
+    background-color: lightskyblue;
+}
+
+.brush-select.blue:hover {
+    background-color: #b6e1fc;
+}
+
+.brush-select.yellow {
+    background-color: gold;
+}
+
+.brush-select.yellow:hover {
+    background-color: #ffe44d;
+}
+
+.brush-select.green {
+    background-color: lightgreen;
+}
+
+.brush-select.green:hover {
+    background-color: #bdf5bd;
+}
+
+.brush-select.purple {
+    background-color: mediumpurple;
+}
+
+.brush-select.purple:hover {
+    background-color: #b299e6;
+}
+
+.brush-select.red {
+    background-color: lightcoral;
+}
+
+.brush-select.red:hover {
+    background-color: #f4a4a4;
 }
 
 #canvas-container {

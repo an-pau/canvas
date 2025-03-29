@@ -6,13 +6,12 @@ class DrawingCanvas {
     clearBtn: HTMLButtonElement;
     undoBtn: HTMLButtonElement;
     redoBtn: HTMLButtonElement;
+    colorSelectBtns: HTMLCollectionOf<Element>;
 
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
 
     isDrawing: boolean;
-    lastSavedX: number;
-    lastSavedY: number;
     selectedColor: string;
     keysPressed: { [key: string]: boolean };
 
@@ -39,6 +38,9 @@ class DrawingCanvas {
         this.clearBtn = document.getElementById("clear") as HTMLButtonElement;
         this.undoBtn = document.getElementById("undo") as HTMLButtonElement;
         this.redoBtn = document.getElementById("redo") as HTMLButtonElement;
+        this.colorSelectBtns = document.getElementsByClassName(
+            "brush-select"
+        ) as HTMLCollectionOf<Element>;
 
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d", {
@@ -46,14 +48,12 @@ class DrawingCanvas {
         }) as CanvasRenderingContext2D;
 
         this.isDrawing = false;
-        this.lastSavedX = 0;
-        this.lastSavedY = 0;
         this.selectedColor = "black";
+        this.keysPressed = {};
 
         this.past = [];
         this.current = [];
         this.future = [];
-        this.keysPressed = {};
 
         this.initEvents();
     }
@@ -71,8 +71,8 @@ class DrawingCanvas {
         this.undoBtn.disabled = true;
         this.redoBtn.disabled = true;
 
-        this.canvas.addEventListener("mousedown", (e) => {
-            this.start(e);
+        this.canvas.addEventListener("mousedown", () => {
+            this.start();
         });
 
         /** @todo Limit how long a user can click off canvas */
@@ -98,26 +98,37 @@ class DrawingCanvas {
         });
 
         this.undoBtn.addEventListener("click", () => {
-            if (this.past.length > 0) {
-                this.undo();
-            } else {
-                this.undoBtn.disabled = true;
-            }
+            this.undo();
         });
 
         this.redoBtn.addEventListener("click", () => {
-            if (this.future.length > 0) {
-                this.redo();
-            } else {
-                this.redoBtn.disabled = true;
-            }
+            this.redo();
+        });
+
+        Array.from(this.colorSelectBtns).forEach((el: Element) => {
+            el.addEventListener("click", () => {
+                const brushColor = el.getAttribute("data-br-color");
+                if (brushColor) {
+                    this.selectedColor = brushColor;
+                    this.ctx.strokeStyle = brushColor;
+                    this.ctx.fillStyle = brushColor;
+                }
+            });
         });
 
         document.addEventListener("keydown", (event) => {
             this.keysPressed[event.key] = true;
 
-            if (this.keysPressed["Control"] && event.key == "z") {
+            if (this.keysPressed["Control"] && this.keysPressed["z"]) {
                 this.undo();
+            }
+
+            if (
+                this.keysPressed["Control"] &&
+                this.keysPressed["Shift"] &&
+                this.keysPressed["z"]
+            ) {
+                this.redo();
             }
         });
 
@@ -143,45 +154,54 @@ class DrawingCanvas {
         this.ctx.stroke();
     }
 
-    start(e: MouseEvent) {
+    start() {
         this.isDrawing = true;
-        this.lastSavedX = e.clientX;
-        this.lastSavedY = e.clientY;
-
         this.ctx.beginPath();
     }
 
     undo() {
-        const past = [...this.past];
-        const future = [...this.future];
+        const past = structuredClone(this.past);
+        const future = structuredClone(this.future);
 
         const lastAddedImage = past.pop();
-        this.past = [...past];
+        this.past = structuredClone(past);
 
         if (lastAddedImage) {
             future.unshift(lastAddedImage);
-            this.future = [...future];
+            this.future = structuredClone(future);
             this.redoBtn.disabled = false;
+
             this.ctx.putImageData(lastAddedImage.data, 0, 0);
+        }
+
+        if (this.past.length < 1) {
+            this.undoBtn.disabled = true;
         }
     }
 
     redo() {
-        const past = [...this.past];
-        const future = [...this.future];
+        const past = structuredClone(this.past);
+        const future = structuredClone(this.future);
 
         const lastRemovedImage = future.shift();
-        this.future = [...future];
+        this.future = structuredClone(future);
 
         if (lastRemovedImage) {
             past.push(lastRemovedImage);
-            this.past = [...past];
+            this.past = structuredClone(past);
+            console.log(lastRemovedImage);
+
             this.ctx.putImageData(lastRemovedImage.data, 0, 0);
+        }
+
+        if (this.future.length < 1) {
+            this.redoBtn.disabled = true;
         }
     }
 
     clear() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
         this.past = [];
         this.current = [];
         this.undoBtn.disabled = true;

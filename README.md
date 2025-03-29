@@ -10,7 +10,6 @@ TBA
 
 - Time limit clicking off canvas
 - Fix redo bug
-- Change brush color
 - Save functionality
 
 ## developing
