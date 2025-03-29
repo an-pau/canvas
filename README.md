@@ -4,13 +4,20 @@ A drawing tool 🖋️
 
 ![canvas-screenshot1](./assets/canvas_screenshot1.png)
 
+## features
+
+- Change brush color
+- Undo and redo (up to 25 brush strokes are stored in history)
+- Clear image
+- Download image
+
 ## changelog
 
 TBA
 
 ## todo
 
-- Set size limit for undo/redo data storage
+TBD
 
 ## developing
 

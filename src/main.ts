@@ -71,6 +71,22 @@ class DrawingCanvas {
             this.canvas.offsetWidth,
             this.canvas.offsetHeight
         );
+
+        this.initHistory();
+    }
+
+    initHistory() {
+        // Initial state available for undo
+        const initialImageData = this.ctx.getImageData(
+            0,
+            0,
+            this.canvas.width,
+            this.canvas.height
+        );
+        this.past.push({
+            id: uuidv4(),
+            data: initialImageData,
+        });
     }
 
     initUserEvents() {
@@ -184,6 +200,7 @@ class DrawingCanvas {
             id: uniqueId,
             data: currentImageData,
         });
+        this.trimStorage(this.past);
         this.undoBtn.disabled = false;
 
         this.future = [];
@@ -205,12 +222,10 @@ class DrawingCanvas {
                     0,
                     0
                 );
-            } else {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
         }
 
-        if (this.past.length === 0) {
+        if (this.past.length <= 1) {
             this.undoBtn.disabled = true;
         }
     }
@@ -222,6 +237,7 @@ class DrawingCanvas {
 
         if (lastRemovedImage) {
             this.past.push(lastRemovedImage);
+            this.trimStorage(this.past);
             this.undoBtn.disabled = false;
 
             this.ctx.putImageData(lastRemovedImage.data, 0, 0);
@@ -236,7 +252,8 @@ class DrawingCanvas {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.past = [];
-        this.undoBtn.disabled = true;
+        // Restart storage of past images
+        this.initHistory();
         this.redoBtn.disabled = true;
     }
 
@@ -256,6 +273,15 @@ class DrawingCanvas {
             e.clientY >= rect.top &&
             e.clientY <= rect.bottom
         );
+    }
+
+    trimStorage(
+        data: Array<{ id: string; data: ImageData }>,
+        MAX: number = 25
+    ) {
+        while (data.length > MAX) {
+            data.shift();
+        }
     }
 }
 
