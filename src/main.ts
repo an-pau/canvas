@@ -4,9 +4,10 @@ import "./style.scss";
 
 class DrawingCanvas {
     sizeSlider: HTMLInputElement;
-    clearBtn: HTMLButtonElement;
     undoBtn: HTMLButtonElement;
     redoBtn: HTMLButtonElement;
+    clearBtn: HTMLButtonElement;
+    saveBtn: HTMLButtonElement;
     colorSelectBtns: HTMLCollectionOf<Element>;
 
     canvas: HTMLCanvasElement;
@@ -35,9 +36,10 @@ class DrawingCanvas {
         this.sizeSlider = document.getElementById(
             "size-slider"
         ) as HTMLInputElement;
-        this.clearBtn = document.getElementById("clear") as HTMLButtonElement;
         this.undoBtn = document.getElementById("undo") as HTMLButtonElement;
         this.redoBtn = document.getElementById("redo") as HTMLButtonElement;
+        this.clearBtn = document.getElementById("clear") as HTMLButtonElement;
+        this.saveBtn = document.getElementById("save") as HTMLButtonElement;
         this.colorSelectBtns = document.getElementsByClassName(
             "brush-select"
         ) as HTMLCollectionOf<Element>;
@@ -66,6 +68,12 @@ class DrawingCanvas {
         this.ctx.fillStyle = DEFAULT_CTX.fillStyle;
         this.ctx.lineCap = DEFAULT_CTX.lineCap;
         this.ctx.lineJoin = DEFAULT_CTX.lineJoin;
+        this.ctx.fillRect(
+            0,
+            0,
+            this.canvas.offsetWidth,
+            this.canvas.offsetHeight
+        );
 
         this.undoBtn.disabled = true;
         this.redoBtn.disabled = true;
@@ -92,8 +100,14 @@ class DrawingCanvas {
             this.ctx.lineWidth = Number(this.sizeSlider.value);
         });
 
-        this.clearBtn.addEventListener("click", () => {
-            this.clear();
+        Array.from(this.colorSelectBtns).forEach((el: Element) => {
+            el.addEventListener("click", () => {
+                const brushColor = el.getAttribute("data-br-color");
+                if (brushColor) {
+                    this.ctx.strokeStyle = brushColor;
+                    this.ctx.fillStyle = brushColor;
+                }
+            });
         });
 
         this.undoBtn.addEventListener("click", () => {
@@ -104,14 +118,12 @@ class DrawingCanvas {
             this.redo();
         });
 
-        Array.from(this.colorSelectBtns).forEach((el: Element) => {
-            el.addEventListener("click", () => {
-                const brushColor = el.getAttribute("data-br-color");
-                if (brushColor) {
-                    this.ctx.strokeStyle = brushColor;
-                    this.ctx.fillStyle = brushColor;
-                }
-            });
+        this.clearBtn.addEventListener("click", () => {
+            this.clear();
+        });
+
+        this.saveBtn.addEventListener("click", () => {
+            this.save();
         });
 
         document.addEventListener("keydown", (event) => {
@@ -176,6 +188,7 @@ class DrawingCanvas {
             this.undoBtn.disabled = true;
         }
 
+        /** @debug @todo Remove after fix */
         console.log("UNDO PAST", this.past);
         console.log("UNDO FUTURE", this.future);
     }
@@ -198,6 +211,7 @@ class DrawingCanvas {
             this.redoBtn.disabled = true;
         }
 
+        /** @debug @todo Remove after fix */
         console.log("REDO PAST", this.past);
         console.log("REDO FUTURE", this.future);
     }
@@ -209,6 +223,14 @@ class DrawingCanvas {
         this.current = [];
         this.undoBtn.disabled = true;
         this.redoBtn.disabled = true;
+    }
+
+    save() {
+        const dataURL = this.canvas.toDataURL("image/png", 1);
+        const link = document.createElement("a");
+        link.href = dataURL;
+        link.download = "my_canvas";
+        link.click();
     }
 }
 

@@ -51,7 +51,8 @@ hr {
     width: 100%;
 }
 
-.material-symbols-outlined, .material-icons {
+.material-symbols-outlined,
+.material-icons {
     font-size: 16px;
 }
 
@@ -142,11 +143,11 @@ hr {
 #canvas-container {
     width: 100%;
     padding: 40px 40px 40px 0;
-}
 
-#canvas-container canvas {
-    width: 1000px;
-    height: 600px;
-    border-radius: 10px;
-    background-color: white;
+    canvas {
+        width: 1000px;
+        height: 600px;
+        border-radius: 10px;
+        background-color: white;
+    }
 }
