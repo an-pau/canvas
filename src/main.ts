@@ -29,8 +29,6 @@ class DrawingCanvas {
         data: ImageData;
     }>;
 
-    /** @note @todo Undo/Redo actions using stack DS with push/pop method */
-    /** Set limit for how many actions/images are saved */
     constructor() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
         
@@ -53,6 +51,7 @@ class DrawingCanvas {
         this.isDrawing = false;
         this.keysPressed = {};
 
+        /** @todo Set limit for how many actions/images are saved */
         this.past = [];
         this.current = [];
         this.future = [];

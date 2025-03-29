@@ -13,6 +13,9 @@ TBA
 - Time limit clicking off canvas
 - Fix redo bug
 
+## considerations
+- What is the maximum size of past/future data storage this can handle?
+
 ## developing
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
