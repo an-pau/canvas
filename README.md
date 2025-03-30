@@ -6,7 +6,7 @@ A drawing tool 🖋️
 
 ## features
 
-- Change brush color
+- Change brush color and size
 - Undo and redo (up to 25 brush strokes are stored in history)
 - Clear image
 - Download image
