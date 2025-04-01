@@ -11,7 +11,7 @@ class DrawingCanvas {
     undoBtn: HTMLButtonElement;
     redoBtn: HTMLButtonElement;
     clearBtn: HTMLButtonElement;
-    saveBtn: HTMLButtonElement;
+    downloadBtn: HTMLButtonElement;
 
     isDrawing: boolean;
     keysPressed: { [key: string]: boolean };
@@ -41,7 +41,7 @@ class DrawingCanvas {
         this.undoBtn = document.getElementById("undo") as HTMLButtonElement;
         this.redoBtn = document.getElementById("redo") as HTMLButtonElement;
         this.clearBtn = document.getElementById("clear") as HTMLButtonElement;
-        this.saveBtn = document.getElementById("save") as HTMLButtonElement;
+        this.downloadBtn = document.getElementById("download") as HTMLButtonElement;
 
         this.isDrawing = false;
         this.keysPressed = {};
@@ -119,8 +119,8 @@ class DrawingCanvas {
             this.clear();
         });
 
-        this.saveBtn.addEventListener("click", () => {
-            this.save();
+        this.downloadBtn.addEventListener("click", () => {
+            this.download();
         });
 
         // Listens for undo and redo keydown events
@@ -257,7 +257,7 @@ class DrawingCanvas {
         this.redoBtn.disabled = true;
     }
 
-    save() {
+    download() {
         const dataURL = this.canvas.toDataURL("image/png", 1);
         const link = document.createElement("a");
         link.href = dataURL;
