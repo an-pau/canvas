@@ -17,7 +17,12 @@ TBA
 
 ## todo
 
-TBD
+- Brush colors
+- Text
+- Shapes
+- Lines: straight, step, bezier, arrow
+- Add stamps
+- Backgrounds
 
 ## developing
 
