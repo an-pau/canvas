@@ -17,6 +17,7 @@ TBA
 
 ## todo
 
+- Research p5.js library
 - Brush colors
 - Text
 - Shapes
